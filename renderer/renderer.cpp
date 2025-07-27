@@ -1,11 +1,8 @@
-﻿// renderer.cpp : Defines the entry point for the application.
+﻿#include <iostream>
 
-#include "renderer.h"
-
-using namespace std;
-
-int main()
-{
-	cout << "Hello CMake." << endl;
-	return 0;
+int main() {
+    // Your program code here
+    std::cout << "Press Enter to continue...";
+    std::cin.get();  // Waits for Enter key
+    return 0;
 }
