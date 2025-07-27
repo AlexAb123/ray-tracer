@@ -2,7 +2,7 @@
 # project specific logic here.
 
 # Add source to this project's executable.
-add_executable (renderer "renderer.cpp" "renderer.h")
+add_executable (renderer "renderer.cpp" "renderer.h"  "vec3.h" "vec3.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET renderer PROPERTY CXX_STANDARD 20)

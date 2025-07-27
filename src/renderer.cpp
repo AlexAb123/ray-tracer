@@ -11,45 +11,43 @@ int main() {
     // Create window
     int windowWidth = 400;
     int windowHeight = 400;
-    GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, "Simple Pixels", NULL, NULL);
-    if (window == NULL) {
-        std::cout << "Failed to create window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
+    GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, "Static Image", NULL, NULL);
+
     glfwMakeContextCurrent(window);
 
-    // Main loop
-    while (!glfwWindowShouldClose(window)) {
-        glViewport(0, 0, windowWidth, windowHeight);
-        glClear(GL_COLOR_BUFFER_BIT);
+    // Render the image ONCE
+    glViewport(0, 0, windowWidth, windowHeight);
+    glClear(GL_COLOR_BUFFER_BIT);
 
-        glBegin(GL_POINTS);
+    glBegin(GL_POINTS);
 
-        // Draw each pixel
-        for (int y = 0; y < windowHeight; y++) {
-            for (int x = 0; x < windowWidth; x++) {
-                // Simple color calculation
-                float red = (float)x / windowWidth;      // Red increases left to right
-                float green = (float)y / windowHeight;   // Green increases bottom to top  
-                float blue = 0.0f;                       // No blue
+    // Draw each pixel
+    for (int y = 0; y < windowHeight; y++) {
+        for (int x = 0; x < windowWidth; x++) {
+            float u = (float)x / (windowWidth);
+            float v = (float)y / (windowHeight);
+            float b = 0.0f;
 
-                // Set pixel color
-                glColor3f(red, green, blue);
+            float r = u;
+            float g = v;
 
-                // Draw the pixel
-                float glX = (x / (float)windowWidth) * 2.0f - 1.0f;
-                float glY = (y / (float)windowHeight) * 2.0f - 1.0f;
-                glVertex2f(glX, glY);
-            }
+            // Set pixel color
+            glColor3f(r, g, b);
+
+            // Draw the pixel
+            float glU = (u) * 2.0f - 1.0f;
+            float glV = -1.0f * (v * 2.0f - 1.0f);
+            glVertex2f(glU, glV);
         }
+    }
 
-        glEnd();
+    glEnd();
+    glfwSwapBuffers(window);
 
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+    // Keep window open until user closes it
+    while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();  // Just check for close button - no redrawing
     }
 
     glfwTerminate();
-    return 0;
 }
