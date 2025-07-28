@@ -3,8 +3,24 @@
 #include "vec3.h"
 #include "ray.h"
 
-vec3 rayColor(ray& r) {
-    return vec3(r.dir.length() / 10.0);
+bool hitSphere(const vec3& sphereCenter, const double sphereRadius, const ray& r) {
+    vec3 originToCenter = r.origin - sphereCenter;
+    double a = dot(r.dir, r.dir);
+    double b = dot(-2.0 * r.dir, originToCenter);
+    double c = dot(originToCenter, originToCenter) - (sphereRadius * sphereRadius);
+    double discriminant = (b * b) - (4 * a * c);
+    return discriminant >= 0;
+}
+
+vec3 rayColor(const ray& r) {
+
+    if (hitSphere(vec3(0, 0, 2), 1.0, r)) {
+        return vec3(1, 0, 0);
+    }
+
+    vec3 unit = r.dir.normalize();
+    auto a = 0.5 * (unit.y + 1.0);
+    return (1.0 - a) * vec3(1.0, 1.0, 1.0) + a * vec3(0.5, 0.7, 1.0);
 }
 
 int main() {
@@ -15,16 +31,16 @@ int main() {
     }
 
     // Image and aspect ratio
-    float idealAspectRatio = 16.0 / 9.0;
+    double idealAspectRatio = 16.0 / 9.0;
     int imageWidth = 800;
-    int imageHeight = imageWidth / idealAspectRatio;
+    int imageHeight = int(imageWidth / idealAspectRatio);
     imageHeight = (imageHeight < 1) ? 1 : imageHeight;
-    float aspectRatio = (float)imageWidth / imageHeight;
+    double aspectRatio = (double)imageWidth / imageHeight;
 
     // Camera
-    float focalLength = 1.0f;
-    float viewportHeight = 2.0f;
-    float viewportWidth = viewportHeight * aspectRatio;
+    double focalLength = 1.0f;
+    double viewportHeight = 2.0f;
+    double viewportWidth = viewportHeight * aspectRatio;
     vec3 cameraCenter = vec3(0, 0, 0);
 
     // Calculate the vectors across the horizontal and down the vertical viewport edges.
@@ -39,7 +55,7 @@ int main() {
     vec3 pixel00Center = viewportTopLeft + 0.5 * (pixelDeltaU + pixelDeltaV);
 
     // Create window
-    GLFWwindow* window = glfwCreateWindow(imageWidth, imageHeight, "Static Image", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(imageWidth, imageHeight, "renderer", NULL, NULL);
 
     glfwMakeContextCurrent(window);
 
@@ -52,8 +68,8 @@ int main() {
     // Draw each pixel
     for (int y = 0; y < imageHeight; y++) {
         for (int x = 0; x < imageWidth; x++) {
-            float u = (float)x / (imageWidth);
-            float v = (float)y / (imageHeight);
+            double u = (double)x / (imageWidth);
+            double v = (double)y / (imageHeight);
 
             vec3 pixelCenter = pixel00Center + (x * pixelDeltaU) + (y * pixelDeltaV);
             vec3 rayDirection = pixelCenter - cameraCenter;
@@ -63,9 +79,9 @@ int main() {
             vec3 pixelColor = rayColor(r);
 
             // Set pixel vec3 and draw pixel
-            glColor3f(pixelColor.x, pixelColor.y, pixelColor.z);
-            float glU = (u) * 2.0f - 1.0f;
-            float glV = -1.0f * (v * 2.0f - 1.0f);
+            glColor3f((float)pixelColor.x, (float)pixelColor.y, (float)pixelColor.z);
+            float glU = float((u) * 2.0f - 1.0f);
+            float glV = float(-1.0f * (v * 2.0f - 1.0f));
             glVertex2f(glU, glV);
         }
     }

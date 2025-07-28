@@ -55,16 +55,6 @@ public:
 		return *this;
 	}
 
-	double dot(const vec3& other) const {
-		return x * other.x + y * other.y + z * other.z;
-	}
-
-	vec3 cross(const vec3& other) const {
-		return vec3(y * other.z - z * other.y,
-			z * other.x - x * other.z,
-			x * other.y - y * other.x);
-	}
-
 	double length() const {
 		return sqrt(x * x + y * y + z * z);
 	}
@@ -79,6 +69,16 @@ public:
 	}
 
 };
+
+inline double dot(const vec3& u, const vec3& v) {
+	return u.x * v.x + u.y * v.y + u.z * v.z;
+}
+
+inline vec3 cross(const vec3& u, const vec3& v) {
+	return vec3(u.y * v.z - u.z * v.y,
+		u.z * v.x - u.x * v.z,
+		u.x * v.y - u.y * v.x);
+}
 
 inline vec3 operator*(double scalar, const vec3& vec) {
 	return vec * scalar;
