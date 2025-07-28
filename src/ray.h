@@ -1,18 +1,21 @@
 #pragma once
 
-#include "Vector3.h"
+#include "vector3.h"
 
 class Ray {
 
+private:
+	Vector3 m_origin;
+	Vector3 m_dir;
+
 public:
 
-	Vector3 origin;
-	Vector3 dir;
+	Ray(const Vector3& origin, const Vector3& dir) : m_origin(origin), m_dir(dir) {}
 
-	Ray(const Vector3& origin, const Vector3& dir) : origin(origin), dir(dir) {}
+	const Vector3& origin() const { return m_origin; }
+	const Vector3& dir() const { return m_dir; }
 
 	Vector3 at(double t) const {
-		return origin + (t * dir);
+		return m_origin + (t * m_dir);
 	}
-
 };

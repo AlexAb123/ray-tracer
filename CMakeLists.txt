@@ -10,7 +10,7 @@ if (POLICY CMP0141)
 	set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
-project ("Renderer")
+project ("renderer")
 
 # Include sub-projects.
 add_subdirectory ("src")

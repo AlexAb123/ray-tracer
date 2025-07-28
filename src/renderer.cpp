@@ -1,12 +1,12 @@
 ﻿#include <GLFW/glfw3.h>
 #include <iostream>
-#include "Renderer.h"
+#include "renderer.h"
 
 // Returns t value of first point of intersection with Sphere. -1.0 if no intersection.
 double hitSphere(const Vector3& sphereCenter, const double sphereRadius, const Ray& r) {
-    Vector3 originToCenter = sphereCenter - r.origin;
-    double a = r.dir.length_squared();
-    double h = dot(r.dir, originToCenter);
+    Vector3 originToCenter = sphereCenter - r.origin();
+    double a = r.dir().length_squared();
+    double h = dot(r.dir(), originToCenter);
     double c = originToCenter.length_squared() - sphereRadius * sphereRadius;
     double discriminant = h * h - a * c;
 
@@ -29,8 +29,8 @@ Vector3 rayColor(const Ray& r) {
         return 0.5 * (normal + Vector3(1));
     }
 
-    Vector3 unit = r.dir.normalize();
-    auto a = 0.5 * (unit.y + 1.0);
+    Vector3 unit = r.dir().normalize();
+    auto a = 0.5 * (unit.y() + 1.0);
     return (1.0 - a) * Vector3(1.0, 1.0, 1.0) + a * Vector3(0.5, 0.7, 1.0);
 }
 
@@ -90,7 +90,7 @@ int main() {
             Vector3 pixelColor = rayColor(r);
 
             // Set pixel Vector3 and draw pixel
-            glColor3f((float)pixelColor.x, (float)pixelColor.y, (float)pixelColor.z);
+            glColor3f((float)pixelColor.x(), (float)pixelColor.y(), (float)pixelColor.z());
             float glU = float(u * 2.0f - 1.0f);
             float glV = float(-1.0f * (v * 2.0f - 1.0f));
             glVertex2f(glU, glV);
