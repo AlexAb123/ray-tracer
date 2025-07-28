@@ -12,7 +12,7 @@ public:
 	ray(const vec3& origin, const vec3& dir) : origin(origin), dir(dir) {}
 
 	vec3 at(double t) const {
-		return origin + t * dir;
+		return origin + (t * dir);
 	}
 
 };

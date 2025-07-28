@@ -56,7 +56,7 @@ public:
 	}
 
 	double length() const {
-		return sqrt(x * x + y * y + z * z);
+		return std::sqrt(x * x + y * y + z * z);
 	}
 
 	double length_squared() const {

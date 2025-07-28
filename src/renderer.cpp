@@ -1,21 +1,28 @@
 ﻿#include <GLFW/glfw3.h>
 #include <iostream>
-#include "vec3.h"
-#include "ray.h"
+#include "renderer.h"
 
-bool hitSphere(const vec3& sphereCenter, const double sphereRadius, const ray& r) {
-    vec3 originToCenter = r.origin - sphereCenter;
+// Returns t value of first point of intersection with sphere. -1.0 if no intersection.
+double hitSphere(const vec3& sphereCenter, const double sphereRadius, const ray& r) {
+    vec3 originToCenter = sphereCenter - r.origin;
     double a = dot(r.dir, r.dir);
-    double b = dot(-2.0 * r.dir, originToCenter);
+    double b = -2.0 * dot(r.dir, originToCenter);
     double c = dot(originToCenter, originToCenter) - (sphereRadius * sphereRadius);
     double discriminant = (b * b) - (4 * a * c);
-    return discriminant >= 0;
+    if (discriminant < 0)
+        return -1.0;
+    return (-b - std::sqrt(discriminant)) / (2.0 * a);
 }
 
 vec3 rayColor(const ray& r) {
 
-    if (hitSphere(vec3(0, 0, 2), 1.0, r)) {
-        return vec3(1, 0, 0);
+    vec3 sphereCenter = vec3(0, 0, -1);
+    double sphereRadius = 0.5;
+
+    double t = hitSphere(sphereCenter, sphereRadius, r);
+    if (t > 0.0) {
+        vec3 normal = (r.at(t) - sphereCenter).normalize();
+        return 0.5 * (normal + vec3(1));
     }
 
     vec3 unit = r.dir.normalize();
@@ -66,23 +73,25 @@ int main() {
     glBegin(GL_POINTS);
 
     // Draw each pixel
-    for (int y = 0; y < imageHeight; y++) {
-        for (int x = 0; x < imageWidth; x++) {
+     for (int x = 0; x < imageWidth; x++) {
+        for (int y = 0; y < imageHeight; y++) {
             double u = (double)x / (imageWidth);
             double v = (double)y / (imageHeight);
 
             vec3 pixelCenter = pixel00Center + (x * pixelDeltaU) + (y * pixelDeltaV);
-            vec3 rayDirection = pixelCenter - cameraCenter;
+            vec3 rayDir = pixelCenter - cameraCenter;
 
-            ray r(cameraCenter, rayDirection);
+            ray r(cameraCenter, rayDir);
 
             vec3 pixelColor = rayColor(r);
 
             // Set pixel vec3 and draw pixel
             glColor3f((float)pixelColor.x, (float)pixelColor.y, (float)pixelColor.z);
-            float glU = float((u) * 2.0f - 1.0f);
+            float glU = float(u * 2.0f - 1.0f);
             float glV = float(-1.0f * (v * 2.0f - 1.0f));
             glVertex2f(glU, glV);
+
+
         }
     }
 

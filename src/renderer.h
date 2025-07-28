@@ -1,8 +1,6 @@
-﻿// renderer.h : Include file for standard system include files,
-// or project specific include files.
+﻿#pragma once
+#include "vec3.h"
+#include "ray.h"
 
-#pragma once
-
-#include <iostream>
-
-// TODO: Reference additional headers your program requires here.
+double hitSphere(const vec3& sphereCenter, const double sphereRadius, const ray& r);
+vec3 rayColor(const ray& r);
