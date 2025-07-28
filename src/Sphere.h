@@ -1,7 +1,7 @@
 #include "hittable.h"
 #include "ray.h"
 
-class Sphere : Hittable {
+class Sphere : public Hittable {
 
 private:
     Vector3 m_center;
@@ -14,7 +14,7 @@ public:
     const Vector3& center() const { return m_center; }
     double radius() const { return m_radius; }
 
-    bool hit(const Ray& r, double rayTMin, double rayTMax, HitRecord& record) const {
+    bool hit(const Ray& r, double rayTMin, double rayTMax, HitRecord& rec) const {
         Vector3 originToCenter = m_center - r.origin();
         double a = r.dir().length_squared();
         double h = dot(r.dir(), originToCenter);
@@ -34,10 +34,10 @@ public:
                 return false;
         }
 
-        record.setT(root);
-        record.setPoint(r.at(record.t()));
-        Vector3 outward_normal = (record.point() - m_center) / m_radius;
-        record.setFaceNormal(r, outward_normal);
+        rec.setT(root);
+        rec.setPoint(r.at(rec.t()));
+        Vector3 outward_normal = (rec.point() - m_center) / m_radius;
+        rec.setFaceNormal(r, outward_normal);
 
         return true;
 	}

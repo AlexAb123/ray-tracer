@@ -10,6 +10,7 @@ private:
 
 public:
 
+	Ray() {}
 	Ray(const Vector3& origin, const Vector3& dir) : m_origin(origin), m_dir(dir) {}
 
 	const Vector3& origin() const { return m_origin; }

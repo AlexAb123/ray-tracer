@@ -1,6 +1,8 @@
 ﻿#include <GLFW/glfw3.h>
-#include <iostream>
 #include "renderer.h"
+#include "hittable.h"
+#include "hittable_list.h"
+#include "sphere.h"
 
 // Returns t value of first point of intersection with Sphere. -1.0 if no intersection.
 double hitSphere(const Vector3& sphereCenter, const double sphereRadius, const Ray& r) {
@@ -18,17 +20,15 @@ double hitSphere(const Vector3& sphereCenter, const double sphereRadius, const R
     }
 }
 
-Vector3 rayColor(const Ray& r) {
+Vector3 rayColor(const Ray& r, const Hittable& world) {
 
-    Vector3 sphereCenter = Vector3(0, 0, -1);
-    double sphereRadius = 0.5;
+    HitRecord rec;
 
-    double t = hitSphere(sphereCenter, sphereRadius, r);
-    if (t > 0.0) {
-        Vector3 normal = (r.at(t) - sphereCenter).normalize();
-        return 0.5 * (normal + Vector3(1));
+    if (world.hit(r, 0, INF, rec)) {
+        return 0.5 * (rec.normal() + Vector3(1, 1, 1));
     }
 
+    // If no hit, display a background color
     Vector3 unit = r.dir().normalize();
     auto a = 0.5 * (unit.y() + 1.0);
     return (1.0 - a) * Vector3(1.0, 1.0, 1.0) + a * Vector3(0.5, 0.7, 1.0);
@@ -65,6 +65,11 @@ int main() {
     Vector3 viewportTopLeft = cameraCenter - Vector3(0, 0, focalLength) - (viewportU / 2.0) - (viewportV / 2.0);
     Vector3 pixel00Center = viewportTopLeft + 0.5 * (pixelDeltaU + pixelDeltaV);
 
+    // World
+    HittableList world;
+    world.add(make_shared<Sphere>(Vector3(0, 0, -1), 0.5));
+    world.add(make_shared<Sphere>(Vector3(0, -100.5, -1), 100));
+
     // Create window
     GLFWwindow* window = glfwCreateWindow(imageWidth, imageHeight, "Renderer", NULL, NULL);
 
@@ -87,7 +92,7 @@ int main() {
 
             Ray r(cameraCenter, rayDir);
 
-            Vector3 pixelColor = rayColor(r);
+            Vector3 pixelColor = rayColor(r, world);
 
             // Set pixel Vector3 and draw pixel
             glColor3f((float)pixelColor.x(), (float)pixelColor.y(), (float)pixelColor.z());

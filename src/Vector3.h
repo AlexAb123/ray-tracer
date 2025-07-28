@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cmath>
+#include "utils.h"
 
 class Vector3 {
 
