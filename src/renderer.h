@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "vec3.h"
-#include "ray.h"
+#include "Vector3.h"
+#include "Ray.h"
 
-double hitSphere(const vec3& sphereCenter, const double sphereRadius, const ray& r);
-vec3 rayColor(const ray& r);
+double hitSphere(const Vector3& sphereCenter, const double sphereRadius, const Ray& r);
+Vector3 rayColor(const Ray& r);

@@ -1,17 +1,17 @@
 #pragma once
 
-#include "vec3.h"
+#include "Vector3.h"
 
-class ray {
+class Ray {
 
 public:
 
-	vec3 origin;
-	vec3 dir;
+	Vector3 origin;
+	Vector3 dir;
 
-	ray(const vec3& origin, const vec3& dir) : origin(origin), dir(dir) {}
+	Ray(const Vector3& origin, const Vector3& dir) : origin(origin), dir(dir) {}
 
-	vec3 at(double t) const {
+	Vector3 at(double t) const {
 		return origin + (t * dir);
 	}
 

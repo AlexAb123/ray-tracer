@@ -1,33 +1,37 @@
 ﻿#include <GLFW/glfw3.h>
 #include <iostream>
-#include "renderer.h"
+#include "Renderer.h"
 
-// Returns t value of first point of intersection with sphere. -1.0 if no intersection.
-double hitSphere(const vec3& sphereCenter, const double sphereRadius, const ray& r) {
-    vec3 originToCenter = sphereCenter - r.origin;
-    double a = dot(r.dir, r.dir);
-    double b = -2.0 * dot(r.dir, originToCenter);
-    double c = dot(originToCenter, originToCenter) - (sphereRadius * sphereRadius);
-    double discriminant = (b * b) - (4 * a * c);
-    if (discriminant < 0)
+// Returns t value of first point of intersection with Sphere. -1.0 if no intersection.
+double hitSphere(const Vector3& sphereCenter, const double sphereRadius, const Ray& r) {
+    Vector3 originToCenter = sphereCenter - r.origin;
+    double a = r.dir.length_squared();
+    double h = dot(r.dir, originToCenter);
+    double c = originToCenter.length_squared() - sphereRadius * sphereRadius;
+    double discriminant = h * h - a * c;
+
+    if (discriminant < 0) {
         return -1.0;
-    return (-b - std::sqrt(discriminant)) / (2.0 * a);
+    }
+    else {
+        return (h - std::sqrt(discriminant)) / a;
+    }
 }
 
-vec3 rayColor(const ray& r) {
+Vector3 rayColor(const Ray& r) {
 
-    vec3 sphereCenter = vec3(0, 0, -1);
+    Vector3 sphereCenter = Vector3(0, 0, -1);
     double sphereRadius = 0.5;
 
     double t = hitSphere(sphereCenter, sphereRadius, r);
     if (t > 0.0) {
-        vec3 normal = (r.at(t) - sphereCenter).normalize();
-        return 0.5 * (normal + vec3(1));
+        Vector3 normal = (r.at(t) - sphereCenter).normalize();
+        return 0.5 * (normal + Vector3(1));
     }
 
-    vec3 unit = r.dir.normalize();
+    Vector3 unit = r.dir.normalize();
     auto a = 0.5 * (unit.y + 1.0);
-    return (1.0 - a) * vec3(1.0, 1.0, 1.0) + a * vec3(0.5, 0.7, 1.0);
+    return (1.0 - a) * Vector3(1.0, 1.0, 1.0) + a * Vector3(0.5, 0.7, 1.0);
 }
 
 int main() {
@@ -48,21 +52,21 @@ int main() {
     double focalLength = 1.0f;
     double viewportHeight = 2.0f;
     double viewportWidth = viewportHeight * aspectRatio;
-    vec3 cameraCenter = vec3(0, 0, 0);
+    Vector3 cameraCenter = Vector3(0, 0, 0);
 
     // Calculate the vectors across the horizontal and down the vertical viewport edges.
-    vec3 viewportU = vec3(viewportWidth, 0, 0);
-    vec3 viewportV = vec3(0, -viewportHeight, 0);
+    Vector3 viewportU = Vector3(viewportWidth, 0, 0);
+    Vector3 viewportV = Vector3(0, -viewportHeight, 0);
 
     // Calculate the horizontal and vertical delta vectors from pixel to pixel.
-    vec3 pixelDeltaU = viewportU / imageWidth;
-    vec3 pixelDeltaV = viewportV / imageHeight;
+    Vector3 pixelDeltaU = viewportU / imageWidth;
+    Vector3 pixelDeltaV = viewportV / imageHeight;
 
-    vec3 viewportTopLeft = cameraCenter - vec3(0, 0, focalLength) - (viewportU / 2.0) - (viewportV / 2.0);
-    vec3 pixel00Center = viewportTopLeft + 0.5 * (pixelDeltaU + pixelDeltaV);
+    Vector3 viewportTopLeft = cameraCenter - Vector3(0, 0, focalLength) - (viewportU / 2.0) - (viewportV / 2.0);
+    Vector3 pixel00Center = viewportTopLeft + 0.5 * (pixelDeltaU + pixelDeltaV);
 
     // Create window
-    GLFWwindow* window = glfwCreateWindow(imageWidth, imageHeight, "renderer", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(imageWidth, imageHeight, "Renderer", NULL, NULL);
 
     glfwMakeContextCurrent(window);
 
@@ -78,20 +82,18 @@ int main() {
             double u = (double)x / (imageWidth);
             double v = (double)y / (imageHeight);
 
-            vec3 pixelCenter = pixel00Center + (x * pixelDeltaU) + (y * pixelDeltaV);
-            vec3 rayDir = pixelCenter - cameraCenter;
+            Vector3 pixelCenter = pixel00Center + (x * pixelDeltaU) + (y * pixelDeltaV);
+            Vector3 rayDir = pixelCenter - cameraCenter;
 
-            ray r(cameraCenter, rayDir);
+            Ray r(cameraCenter, rayDir);
 
-            vec3 pixelColor = rayColor(r);
+            Vector3 pixelColor = rayColor(r);
 
-            // Set pixel vec3 and draw pixel
+            // Set pixel Vector3 and draw pixel
             glColor3f((float)pixelColor.x, (float)pixelColor.y, (float)pixelColor.z);
             float glU = float(u * 2.0f - 1.0f);
             float glV = float(-1.0f * (v * 2.0f - 1.0f));
             glVertex2f(glU, glV);
-
-
         }
     }
 
