@@ -18,9 +18,9 @@ public:
 
     bool hit(const Ray& r, Interval rayT, HitRecord& rec) const override {
         Vector3 originToCenter = m_center - r.origin();
-        double a = r.dir().length_squared();
+        double a = r.dir().lengthSquared();
         double h = dot(r.dir(), originToCenter);
-        double c = originToCenter.length_squared() - m_radius * m_radius;
+        double c = originToCenter.lengthSquared() - m_radius * m_radius;
         double discriminant = h * h - a * c;
 
         if (discriminant < 0)

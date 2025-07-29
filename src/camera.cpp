@@ -85,7 +85,8 @@ Vector3 Camera::rayColor(const Ray& r, const Hittable& world) const
     HitRecord rec;
 
     if (world.hit(r, Interval(0, INF), rec)) {
-        return 0.5 * (rec.normal() + Vector3(1, 1, 1));
+        Vector3 dir = randomOnHemisphere(rec.normal()); // Diffuse reflection direction
+        return 0.5 * rayColor(Ray(rec.point(), dir), world);
     }
 
     // If no hit, display a background color
@@ -98,7 +99,7 @@ Vector3 Camera::rayColor(const Ray& r, const Hittable& world) const
 // point around the pixel location x, y.
 Ray Camera::getRay(int x, int y) const
 {
-    Vector3 offset = sampleSquare();
+    Vector3 offset = Camera::sampleSquare();
     Vector3 pixelSample = m_pixel00Center
         + ((x + offset.x()) * m_pixelDeltaU)
         + ((y + offset.y()) * m_pixelDeltaV);
