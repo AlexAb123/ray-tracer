@@ -12,8 +12,8 @@ int main() {
     world.add(make_shared<Sphere>(Vector3(0, -100.5, -1), 100));
 
     Camera cam;
-    cam.aspectRatio = 16.0 / 9.0;
-    cam.imageWidth = 400;
+    cam.setAspectRatio(16.0 / 9.0);
+    cam.setImageWidth(800);
 
     cam.render(world);
 }

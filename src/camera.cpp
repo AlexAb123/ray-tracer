@@ -3,18 +3,14 @@
 
 void Camera::initialize()
 {
-
     // Image and aspect ratio
-    double idealAspectRatio = 16.0 / 9.0;
-    int imageWidth = 800;
-    int imageHeight = int(imageWidth / idealAspectRatio);
-    imageHeight = (imageHeight < 1) ? 1 : imageHeight;
-    double aspectRatio = (double)imageWidth / imageHeight;
+    m_imageHeight = int(m_imageWidth / m_aspectRatio);
+    m_imageHeight = (m_imageHeight < 1) ? 1 : m_imageHeight;
 
     // Camera
     double focalLength = 1.0f;
     double viewportHeight = 2.0f;
-    double viewportWidth = viewportHeight * aspectRatio;
+    double viewportWidth = viewportHeight * (double)m_imageWidth / m_imageHeight;
     Vector3 center = Vector3(0, 0, 0);
 
     // Calculate the vectors across the horizontal and down the vertical viewport edges.
@@ -22,11 +18,11 @@ void Camera::initialize()
     Vector3 viewportV = Vector3(0, -viewportHeight, 0);
 
     // Calculate the horizontal and vertical delta vectors from pixel to pixel.
-    Vector3 pixelDeltaU = viewportU / imageWidth;
-    Vector3 pixelDeltaV = viewportV / imageHeight;
+    m_pixelDeltaU = viewportU / m_imageWidth;
+    m_pixelDeltaV = viewportV / m_imageHeight;
 
     Vector3 viewportTopLeft = center - Vector3(0, 0, focalLength) - (viewportU / 2.0) - (viewportV / 2.0);
-    Vector3 pixel00Center = viewportTopLeft + 0.5 * (pixelDeltaU + pixelDeltaV);
+    m_pixel00Center = viewportTopLeft + 0.5 * (m_pixelDeltaU + m_pixelDeltaV);
 }
 
 void Camera::render(const Hittable& world)
@@ -40,26 +36,26 @@ void Camera::render(const Hittable& world)
     }
 
     // Create window
-    GLFWwindow* window = glfwCreateWindow(imageWidth, imageHeight, "Renderer", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(m_imageWidth, m_imageHeight, "Renderer", NULL, NULL);
 
     glfwMakeContextCurrent(window);
 
     // Render the image ONCE
-    glViewport(0, 0, imageWidth, imageHeight);
+    glViewport(0, 0, m_imageWidth, m_imageHeight);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glBegin(GL_POINTS);
 
     // Draw each pixel
-    for (int x = 0; x < imageWidth; x++) {
-        for (int y = 0; y < imageHeight; y++) {
-            double u = (double)x / (imageWidth);
-            double v = (double)y / (imageHeight);
+    for (int x = 0; x < m_imageWidth; x++) {
+        for (int y = 0; y < m_imageHeight; y++) {
+            double u = (double)x / (m_imageWidth);
+            double v = (double)y / (m_imageHeight);
 
-            Vector3 pixelCenter = pixel00Center + (x * pixelDeltaU) + (y * pixelDeltaV);
-            Vector3 rayDir = pixelCenter - center;
+            Vector3 pixelCenter = m_pixel00Center + (x * m_pixelDeltaU) + (y * m_pixelDeltaV);
+            Vector3 rayDir = pixelCenter - m_center;
 
-            Ray r(center, rayDir);
+            Ray r(m_center, rayDir);
 
             Vector3 pixelColor = rayColor(r, world);
 
