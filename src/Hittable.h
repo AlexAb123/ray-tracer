@@ -11,6 +11,7 @@ private:
 	bool m_frontFace;
 
 public:
+	HitRecord() : m_point(), m_normal(), m_t(0.0), m_frontFace(false) {}
 
 	// Sets the hit record normal vector.
 	// NOTE: the parameter 'outwardNormal' is assumed to have unit length.
