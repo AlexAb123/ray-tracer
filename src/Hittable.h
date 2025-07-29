@@ -33,5 +33,5 @@ class Hittable {
 public:
 	virtual ~Hittable() = default;
 	// Updates parameter 'rec' with new hit information
-	virtual bool hit(const Ray& r, double rayTMin, double rayTMax, HitRecord& rec) const = 0;
+	virtual bool hit(const Ray& r, Interval rayT, HitRecord& rec) const = 0;
 };

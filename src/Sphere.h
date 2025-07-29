@@ -14,7 +14,7 @@ public:
     const Vector3& center() const { return m_center; }
     double radius() const { return m_radius; }
 
-    bool hit(const Ray& r, double rayTMin, double rayTMax, HitRecord& rec) const {
+    bool hit(const Ray& r, Interval rayT, HitRecord& rec) const override {
         Vector3 originToCenter = m_center - r.origin();
         double a = r.dir().length_squared();
         double h = dot(r.dir(), originToCenter);
@@ -28,9 +28,9 @@ public:
 
         // Find the nearest root that lies in the acceptable range.
         double root = (h - sqrtd) / a;
-        if (root <= rayTMin || rayTMax <= root) {
+        if (!rayT.surrounds(root)) {
             root = (h + sqrtd) / a;
-            if (root <= rayTMin || rayTMax <= root)
+            if (!rayT.surrounds(root))
                 return false;
         }
 

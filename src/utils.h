@@ -21,3 +21,4 @@ inline double degreesToRadians(double degrees) {
 // Common Headers
 #include "ray.h"
 #include "vector3.h"
+#include "interval.h"
