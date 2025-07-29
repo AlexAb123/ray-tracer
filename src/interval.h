@@ -27,5 +27,12 @@ public:
         return m_min < x && x < m_max;
     }
 
+    // Clamps 'x' to be in between min and max
+    double clamp(double x) const {
+        if (x < m_min) return m_min;
+        if (x > m_max) return m_max;
+        return x;
+    }
+
     static const Interval empty, universe;
 };

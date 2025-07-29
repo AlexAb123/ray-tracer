@@ -14,6 +14,7 @@ int main() {
     Camera cam;
     cam.setAspectRatio(16.0 / 9.0);
     cam.setImageWidth(800);
+    cam.setSamplesPerPixel(10);
 
     cam.render(world);
 }

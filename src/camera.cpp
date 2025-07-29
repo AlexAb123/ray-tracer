@@ -7,6 +7,8 @@ void Camera::initialize()
     m_imageHeight = int(m_imageWidth / m_aspectRatio);
     m_imageHeight = (m_imageHeight < 1) ? 1 : m_imageHeight;
 
+    m_pixelSamplesScale = 1.0 / m_samplesPerPixel;
+
     // Camera
     double focalLength = 1.0f;
     double viewportHeight = 2.0f;
@@ -49,18 +51,18 @@ void Camera::render(const Hittable& world)
     // Draw each pixel
     for (int x = 0; x < m_imageWidth; x++) {
         for (int y = 0; y < m_imageHeight; y++) {
-            double u = (double)x / (m_imageWidth);
-            double v = (double)y / (m_imageHeight);
+;
 
-            Vector3 pixelCenter = m_pixel00Center + (x * m_pixelDeltaU) + (y * m_pixelDeltaV);
-            Vector3 rayDir = pixelCenter - m_center;
-
-            Ray r(m_center, rayDir);
-
-            Vector3 pixelColor = rayColor(r, world);
-
+            Vector3 pixelColor(0,0,0);
+            for (int sample = 0; sample < m_samplesPerPixel; sample++) {
+                Ray r = getRay(x, y);
+                pixelColor += rayColor(r, world);
+            }
+            pixelColor *= m_pixelSamplesScale;
             // Set pixel Vector3 and draw pixel
             glColor3f((float)pixelColor.x(), (float)pixelColor.y(), (float)pixelColor.z());
+            double u = (double)x / (m_imageWidth);
+            double v = (double)y / (m_imageHeight);
             float glU = float(u * 2.0f - 1.0f);
             float glV = float(-1.0f * (v * 2.0f - 1.0f));
             glVertex2f(glU, glV);
@@ -78,8 +80,6 @@ void Camera::render(const Hittable& world)
     glfwTerminate();
 }
 
-
-
 Vector3 Camera::rayColor(const Ray& r, const Hittable& world) const
 {
     HitRecord rec;
@@ -92,4 +92,24 @@ Vector3 Camera::rayColor(const Ray& r, const Hittable& world) const
     Vector3 unit = r.dir().normalize();
     auto a = 0.5 * (unit.y() + 1.0);
     return (1.0 - a) * Vector3(1.0, 1.0, 1.0) + a * Vector3(0.5, 0.7, 1.0);
+}
+
+// Construct a camera ray originating from the origin and directed at randomly sampled
+// point around the pixel location x, y.
+Ray Camera::getRay(int x, int y) const
+{
+    Vector3 offset = sampleSquare();
+    Vector3 pixelSample = m_pixel00Center
+        + ((x + offset.x()) * m_pixelDeltaU)
+        + ((y + offset.y()) * m_pixelDeltaV);
+
+    Vector3 rayOrigin = m_center;
+    Vector3 rayDir = pixelSample - rayOrigin;
+
+    return Ray(rayOrigin, rayDir);
+}
+
+// Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5] unit square.
+Vector3 Camera::sampleSquare() {
+    return Vector3(randomDouble() - 0.5, randomDouble() - 0.5, 0);
 }
