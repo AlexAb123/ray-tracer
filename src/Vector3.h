@@ -43,22 +43,22 @@ public:
 		return *this;
 	}
 
-	Vector3 operator*(const double scalar) const {
+	Vector3 operator*(double scalar) const {
 		return Vector3(m_x * scalar, m_y * scalar, m_z * scalar);
 	}
 
-	Vector3& operator*=(const double scalar) {
+	Vector3& operator*=(double scalar) {
 		m_x *= scalar;
 		m_y *= scalar;
 		m_z *= scalar;
 		return *this;
 	}
 
-	Vector3 operator/(const double scalar) const {
+	Vector3 operator/(double scalar) const {
 		return Vector3(m_x / scalar, m_y / scalar, m_z / scalar);
 	}
 
-	Vector3& operator/=(const double scalar) {
+	Vector3& operator/=(double scalar) {
 		m_x /= scalar;
 		m_y /= scalar;
 		m_z /= scalar;
@@ -77,6 +77,26 @@ public:
 	Vector3 normalize() const {
 		return *this / length();
 	}
+
+	static Vector3 random() {
+		return Vector3(randomDouble(), randomDouble(), randomDouble());
+	}
+
+	static Vector3 random(double min, double max) {
+		return Vector3(randomDouble(min, max), randomDouble(min, max), randomDouble(min, max));
+	}
+
+	// Returns an evenly distributed random unit vector sphere on the unit sphere.
+	static Vector3 randomUnitVector() {
+		while (true) {
+			Vector3 p = Vector3::random(-1, 1);
+			double lensq = p.lengthSquared();
+			// Only keep vectors that are in or on the unit sphere before normalization to keep a uniform distribution
+			// Avoid vectors with really small lengths because of floating point precision and division by zero
+			if (1e-160 < lensq && lensq <= 1)
+				return p / std::sqrt(lensq);
+		}
+	}
 };
 
 inline double dot(const Vector3& u, const Vector3& v) {
@@ -93,29 +113,9 @@ inline Vector3 operator*(double scalar, const Vector3& vec) {
 	return vec * scalar;
 }
 
-static Vector3 random() {
-	return Vector3(randomDouble(), randomDouble(), randomDouble());
-}
-
-static Vector3 random(double min, double max) {
-	return Vector3(randomDouble(min, max), randomDouble(min, max), randomDouble(min, max));
-}
-
-// Returns an evenly distributed random unit vector sphere on the unit sphere.
-inline Vector3 randomUnitVector() {
-	while (true) {
-		Vector3 p = random(-1, 1);
-		double lensq = p.lengthSquared();
-		// Only keep vectors that are in or on the unit sphere before normalization to keep a uniform distribution
-		// Avoid vectors with really small lengths because of floating point precision and division by zero
-		if (1e-160 < lensq && lensq <= 1)
-			return p / std::sqrt(lensq);
-	}
-}
-
 // Returns an evenly distrubted random unit vector in the same hemisphere as the given normal vector.
 inline Vector3 randomOnHemisphere(const Vector3& normal) {
-	Vector3 randomOnSphere = randomUnitVector();
+	Vector3 randomOnSphere = Vector3::randomUnitVector();
 	if (dot(randomOnSphere, normal) >= 0.0) // In the same hemisphere as the normal
 		return randomOnSphere;
 	else
