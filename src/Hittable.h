@@ -11,7 +11,7 @@ private:
 	Vector3 m_normal;
 	shared_ptr<Material> m_material;
 	double m_t;
-	bool m_frontFace;
+	bool m_frontFace; // Whether or not it is the outward surface of the object
 
 public:
 	HitRecord() : m_point(), m_normal(), m_t(0.0), m_frontFace(false) {}

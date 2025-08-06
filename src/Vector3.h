@@ -137,3 +137,11 @@ inline Vector3 randomOnHemisphere(const Vector3& normal) {
 inline Vector3 reflect(const Vector3& v, const Vector3& n) {
 	return v - 2 * dot(v, n) * n;
 }
+
+// Refracts unit vector 'uv' about surface with unit normal vector 'n' and ratio of refraction index of incidence to refraction index of transmission.
+inline Vector3 refract(const Vector3& uv, const Vector3& n, double etaiOverEtat) {
+	double cosTheta = std::fmin(dot(-uv, n), 1.0);
+	Vector3 rOutPerpendicular = etaiOverEtat * (uv + cosTheta * n);
+	Vector3 rOutParallel = -std::sqrt(std::fabs(1.0 - rOutPerpendicular.lengthSquared())) * n;
+	return rOutPerpendicular + rOutParallel;
+}
