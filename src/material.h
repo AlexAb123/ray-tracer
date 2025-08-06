@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hittable.h"`
+#include "hittable.h"
 
 class Material {
 public:
@@ -35,15 +35,17 @@ private:
 
 class Metal : public Material {
 public:
-    Metal(const Vector3& albedo) : m_albedo(albedo) {}
+    Metal(const Vector3& albedo, double fuzz) : m_albedo(albedo), m_fuzz(std::min(fuzz, 1.0)) {}
 
     bool scatter(const Ray& rIn, const HitRecord& rec, Vector3& attenuation, Ray& scattered) const override {
         Vector3 reflected = reflect(rIn.direction(), rec.normal());
+        reflected = reflected.normalize() + (m_fuzz * randomUnitVector());
         scattered = Ray(rec.point(), reflected);
         attenuation = m_albedo;
-        return true;
+        return (dot(scattered.direction(), rec.normal()) > 0);
     }
 
 private:
     Vector3 m_albedo;
+    double m_fuzz;
 };
