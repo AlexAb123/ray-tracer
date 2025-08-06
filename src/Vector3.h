@@ -86,16 +86,10 @@ public:
 		return Vector3(randomDouble(min, max), randomDouble(min, max), randomDouble(min, max));
 	}
 
-	// Returns an evenly distributed random unit vector sphere on the unit sphere.
-	static Vector3 randomUnitVector() {
-		while (true) {
-			Vector3 p = Vector3::random(-1, 1);
-			double lensq = p.lengthSquared();
-			// Only keep vectors that are in or on the unit sphere before normalization to keep a uniform distribution
-			// Avoid vectors with really small lengths because of floating point precision and division by zero
-			if (1e-160 < lensq && lensq <= 1)
-				return p / std::sqrt(lensq);
-		}
+	// Return true if the vector is close to zero in all dimensions.
+	bool nearZero() const {
+		double s = 1e-8;
+		return (std::fabs(m_x) < s) && (std::fabs(m_y) < s) && (std::fabs(m_z) < s);
 	}
 };
 
@@ -113,11 +107,33 @@ inline Vector3 operator*(double scalar, const Vector3& vec) {
 	return vec * scalar;
 }
 
+// Component-wise multiplication
+inline Vector3 operator*(const Vector3& u, const Vector3& v) {
+	return Vector3(u.x() * v.x(), u.y() * v.y(), u.z() * v.z());
+}
+
+// Returns an evenly distributed random unit vector sphere on the unit sphere.
+static Vector3 randomUnitVector() {
+	while (true) {
+		Vector3 p = Vector3::random(-1, 1);
+		double lensq = p.lengthSquared();
+		// Only keep vectors that are in or on the unit sphere before normalization to keep a uniform distribution
+		// Avoid vectors with really small lengths because of floating point precision and division by zero
+		if (1e-160 < lensq && lensq <= 1)
+			return p / std::sqrt(lensq);
+	}
+}
+
 // Returns an evenly distrubted random unit vector in the same hemisphere as the given normal vector.
 inline Vector3 randomOnHemisphere(const Vector3& normal) {
-	Vector3 randomOnSphere = Vector3::randomUnitVector();
+	Vector3 randomOnSphere = randomUnitVector();
 	if (dot(randomOnSphere, normal) >= 0.0) // In the same hemisphere as the normal
 		return randomOnSphere;
 	else
 		return -randomOnSphere;
+}
+
+// Reflects vector 'v' about the surface with unit normal vector 'n'.
+inline Vector3 reflect(const Vector3& v, const Vector3& n) {
+	return v - 2 * dot(v, n) * n;
 }

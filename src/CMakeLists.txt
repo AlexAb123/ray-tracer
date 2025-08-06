@@ -4,7 +4,7 @@
 
 
 # Add source to this project's executable.
-add_executable (Renderer "renderer.cpp" "renderer.h" "hittable.h" "hittable_list.h" "ray.h" "vector3.h" "sphere.h" "utils.h" "interval.h" "camera.h" "camera.cpp" "interval.cpp")
+add_executable (Renderer "renderer.cpp" "renderer.h" "hittable.h" "hittable_list.h" "ray.h" "vector3.h" "sphere.h" "utils.h" "interval.h" "camera.h" "camera.cpp" "interval.cpp" "material.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Renderer PROPERTY CXX_STANDARD 20)

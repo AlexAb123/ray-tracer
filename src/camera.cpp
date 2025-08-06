@@ -1,5 +1,6 @@
 #include <GLFW/glfw3.h>
 #include "camera.h"
+#include "material.h"
 
 void Camera::initialize()
 {
@@ -50,17 +51,17 @@ void Camera::render(const Hittable& world)
 
     // Draw each pixel
     for (int x = 0; x < m_imageWidth; x++) {
+        std::clog << "\r% Completed: " << std::round(1000.0 * x / (m_imageWidth - 1)) / 10.0 << std::flush;
         for (int y = 0; y < m_imageHeight; y++) {
-;
 
             Vector3 pixelColor(0,0,0);
             for (int sample = 0; sample < m_samplesPerPixel; sample++) {
                 Ray r = getRay(x, y);
-                pixelColor += rayColor(r, world);
+                pixelColor += rayColor(r, world, 0);
             }
             pixelColor *= m_pixelSamplesScale;
             // Set pixel Vector3 and draw pixel
-            glColor3f((float)pixelColor.x(), (float)pixelColor.y(), (float)pixelColor.z());
+            glColor3f((float)linearToGamma(pixelColor.x()), (float)linearToGamma(pixelColor.y()), (float)linearToGamma(pixelColor.z()));
             double u = (double)x / (m_imageWidth);
             double v = (double)y / (m_imageHeight);
             float glU = float(u * 2.0f - 1.0f);
@@ -68,6 +69,7 @@ void Camera::render(const Hittable& world)
             glVertex2f(glU, glV);
         }
     }
+    std::clog << "\r% Completed: 100.0\n";
 
     glEnd();
     glfwSwapBuffers(window);
@@ -80,17 +82,26 @@ void Camera::render(const Hittable& world)
     glfwTerminate();
 }
 
-Vector3 Camera::rayColor(const Ray& r, const Hittable& world) const
+Vector3 Camera::rayColor(const Ray& r, const Hittable& world, const int depth) const
 {
+
+    // If we've exceeded the ray bounce limit, no more light is gathered.
+    if (depth >= m_maxDepth) {
+        return Vector3(0, 0, 0);
+    }
+    
     HitRecord rec;
 
-    if (world.hit(r, Interval(0, INF), rec)) {
-        Vector3 dir = randomOnHemisphere(rec.normal()); // Diffuse reflection direction
-        return 0.5 * rayColor(Ray(rec.point(), dir), world);
+    if (world.hit(r, Interval(0.001, INF), rec)) {
+        Ray scattered;
+        Vector3 attenuation;
+        if (rec.material()->scatter(r, rec, attenuation, scattered))
+            return attenuation * rayColor(scattered, world, depth + 1);
+        return Vector3(0, 0, 0);
     }
 
     // If no hit, display a background color
-    Vector3 unit = r.dir().normalize();
+    Vector3 unit = r.direction().normalize();
     auto a = 0.5 * (unit.y() + 1.0);
     return (1.0 - a) * Vector3(1.0, 1.0, 1.0) + a * Vector3(0.5, 0.7, 1.0);
 }

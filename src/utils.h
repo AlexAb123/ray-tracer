@@ -28,6 +28,13 @@ inline double randomDouble(double min, double max) {
     return min + (max - min) * randomDouble();
 }
 
+inline double linearToGamma(double linearComponent)
+{
+    if (linearComponent > 0)
+        return std::sqrt(linearComponent);
+    return 0;
+}
+
 // Common Headers
 #include "ray.h"
 #include "vector3.h"
