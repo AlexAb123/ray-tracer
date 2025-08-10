@@ -10,21 +10,29 @@ void Camera::initialize()
 
     m_pixelSamplesScale = 1.0 / m_samplesPerPixel;
 
+    Vector3 center = m_lookFrom;
+
     // Camera
-    double focalLength = 1.0f;
-    double viewportHeight = 2.0f;
+    double focalLength = (m_lookFrom - m_lookAt).length(); // Distance from camera to projection plane
+    double theta = degreesToRadians(m_vFov); // Vertical field of view in degrees
+    double h = std::tan(theta / 2); // Half of the viewport height per unit focal length
+    double viewportHeight = 2 * h * focalLength;
     double viewportWidth = viewportHeight * (double)m_imageWidth / m_imageHeight;
-    Vector3 center = Vector3(0, 0, 0);
+
+    // Calculate the u,v,w orthonormal basis vectors for the camera coordinate frame.
+    m_w = (m_lookFrom - m_lookAt).normalize(); // Backward
+    m_u = cross(m_up, m_w).normalize(); // Right 
+    m_v = cross(m_w, m_u); // Up
 
     // Calculate the vectors across the horizontal and down the vertical viewport edges.
-    Vector3 viewportU = Vector3(viewportWidth, 0, 0);
-    Vector3 viewportV = Vector3(0, -viewportHeight, 0);
+    Vector3 viewportU = viewportWidth * m_u;
+    Vector3 viewportV = viewportHeight * -m_v;
 
     // Calculate the horizontal and vertical delta vectors from pixel to pixel.
     m_pixelDeltaU = viewportU / m_imageWidth;
     m_pixelDeltaV = viewportV / m_imageHeight;
 
-    Vector3 viewportTopLeft = center - Vector3(0, 0, focalLength) - (viewportU / 2.0) - (viewportV / 2.0);
+    Vector3 viewportTopLeft = center - (focalLength * m_w) - (viewportU / 2.0) - (viewportV / 2.0);
     m_pixel00Center = viewportTopLeft + 0.5 * (m_pixelDeltaU + m_pixelDeltaV);
 }
 
@@ -82,11 +90,10 @@ void Camera::render(const Hittable& world)
     glfwTerminate();
 }
 
-Vector3 Camera::rayColor(const Ray& r, const Hittable& world, const int depth) const
+Vector3 Camera::rayColor(const Ray& r, const Hittable& world, const int bounces) const
 {
-
     // If we've exceeded the ray bounce limit, no more light is gathered.
-    if (depth >= m_maxDepth) {
+    if (bounces >= m_maxBounces) {
         return Vector3(0, 0, 0);
     }
     
@@ -96,7 +103,7 @@ Vector3 Camera::rayColor(const Ray& r, const Hittable& world, const int depth) c
         Ray scattered;
         Vector3 attenuation;
         if (rec.material()->scatter(r, rec, attenuation, scattered))
-            return attenuation * rayColor(scattered, world, depth + 1);
+            return attenuation * rayColor(scattered, world, bounces + 1);
         return Vector3(0, 0, 0);
     }
 
@@ -115,7 +122,7 @@ Ray Camera::getRay(int x, int y) const
         + ((x + offset.x()) * m_pixelDeltaU)
         + ((y + offset.y()) * m_pixelDeltaV);
 
-    Vector3 rayOrigin = m_center;
+    Vector3 rayOrigin = m_lookFrom;
     Vector3 rayDir = pixelSample - rayOrigin;
 
     return Ray(rayOrigin, rayDir);

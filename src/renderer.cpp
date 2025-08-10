@@ -27,7 +27,13 @@ int main() {
     cam.setAspectRatio(16.0 / 9.0);
     cam.setImageWidth(800);
     cam.setSamplesPerPixel(10);
-    cam.setMaxDepth(10);
+    cam.setMaxBounces(10);
+
+    cam.setVFov(90);
+
+    cam.setLookFrom(Vector3(-2, 2, 1));
+    cam.setLookAt(Vector3(0, 0, -1));
+    cam.setUp(Vector3(0, 1, 0));
 
     cam.render(world);
 }
