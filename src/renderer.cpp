@@ -9,6 +9,21 @@
 int main() {
 
     // World
+    HittableList world1;
+
+    shared_ptr<Material> groundMaterial1 = make_shared<Lambertian>(Vector3(0.8, 0.8, 0.0));
+    shared_ptr<Material> centerMaterial = make_shared<Lambertian>(Vector3(0.1, 0.2, 0.5));
+    shared_ptr<Material> leftMaterial = make_shared<Dielectric>(1.5);
+    shared_ptr<Material> bubbleMaterial = make_shared<Dielectric>(1.0 / 1.5);
+    shared_ptr<Material> rightMaterial = make_shared<Metal>(Vector3(0.8, 0.6, 0.2), 0.0);
+
+    world1.add(make_shared<Sphere>(Vector3(0.0, -100.5, -1.0), 100.0, groundMaterial1));
+    world1.add(make_shared<Sphere>(Vector3(0.0, 0.0, -1.2), 0.5, centerMaterial));
+    world1.add(make_shared<Sphere>(Vector3(-1.0, 0.0, -1.0), 0.5, leftMaterial));
+    world1.add(make_shared<Sphere>(Vector3(-1.0, 0.0, -1.0), 0.4, bubbleMaterial));
+    world1.add(make_shared<Sphere>(Vector3(1.0, 0.0, -1.0), 0.5, rightMaterial));
+
+    // World
     HittableList world;
 
     // Ground
@@ -55,6 +70,7 @@ int main() {
 
     shared_ptr<Material> material3 = make_shared<Metal>(Vector3(0.7, 0.6, 0.5), 0.0);
     world.add(make_shared<Sphere>(Vector3(4, 1, 0), 1.0, material3));
+
     Camera cam;
     cam.setAspectRatio(16.0 / 9.0);
     cam.setImageWidth(800);
@@ -70,5 +86,5 @@ int main() {
     cam.setDefocusAngle(0.6);
     cam.setFocusDist(10.0);
 
-    cam.render(world);
+    cam.render(world1);
 }

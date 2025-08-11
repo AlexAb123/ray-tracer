@@ -32,8 +32,8 @@ private:
 	Vector3 m_lookAt = Vector3(0, 0, -1);  // Point camera is looking at
 	Vector3 m_up = Vector3(0, 1, 0);	   // Camera-relative "up" direction
 	Vector3 m_u, m_v, m_w;                 // Camera frame basis vectors
-	double m_defocusAngle = 10;			   // Variation angle of rays through each pixel
-	double m_focusDist = 3.4;			   // Distance from camera lookfrom point to plane of perfect focus
+	double  m_defocusAngle = 10;		   // Variation angle of rays through each pixel
+	double  m_focusDist = 3.4;			   // Distance from camera lookfrom point to plane of perfect focus
 	Vector3 m_defocusDiskU;				   // Defocus disk horizontal radius
 	Vector3 m_defocusDiskV;				   // Defocus disk vertical radius
 

@@ -1,6 +1,10 @@
 #include <GLFW/glfw3.h>
 #include "camera.h"
 #include "material.h"
+#include <vector>
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 void Camera::initialize()
 {
@@ -61,6 +65,8 @@ void Camera::render(const Hittable& world)
 
     glBegin(GL_POINTS);
 
+    std::vector<unsigned char> pixels(m_imageWidth * m_imageHeight * 3);
+
     // Draw each pixel
     for (int x = 0; x < m_imageWidth; x++) {
         std::clog << "\r% Completed: " << std::round(1000.0 * x / (m_imageWidth - 1)) / 10.0 << std::flush;
@@ -72,16 +78,29 @@ void Camera::render(const Hittable& world)
                 pixelColor += rayColor(r, world, 0);
             }
             pixelColor *= m_pixelSamplesScale;
+            pixelColor = Vector3(linearToGamma(pixelColor.x()), linearToGamma(pixelColor.y()), linearToGamma(pixelColor.z()));
+
             // Set pixel Vector3 and draw pixel
-            glColor3f((float)linearToGamma(pixelColor.x()), (float)linearToGamma(pixelColor.y()), (float)linearToGamma(pixelColor.z()));
+            glColor3f((float)pixelColor.x(), (float)pixelColor.y(), (float)pixelColor.z());
             double u = (double)x / (m_imageWidth);
             double v = (double)y / (m_imageHeight);
             float glU = float(u * 2.0f - 1.0f);
-            float glV = float(-1.0f * (v * 2.0f - 1.0f));
-            glVertex2f(glU, glV);
+            float glV = float(-1.0f * (v * 2.0f - 1.0f));           glVertex2f(glU, glV);
+
+            auto clamp01 = [](double v) { return v < 0.0 ? 0.0 : (v > 0.999 ? 0.999 : v); };
+
+
+            // Store into pixel buffer (no manual flip here)
+            int index = (y * m_imageWidth + x) * 3;
+            pixels[index + 0] = (unsigned char)(255 * pixelColor.x());
+            pixels[index + 1] = (unsigned char)(255 * pixelColor.y());
+            pixels[index + 2] = (unsigned char)(255 * pixelColor.z());
+
         }
     }
     std::clog << "\r% Completed: 100.0\n";
+
+    stbi_write_png("render.png", m_imageWidth, m_imageHeight, 3, pixels.data(), m_imageWidth * 3);
 
     glEnd();
     glfwSwapBuffers(window);
