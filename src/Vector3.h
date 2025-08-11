@@ -133,6 +133,14 @@ inline Vector3 randomOnHemisphere(const Vector3& normal) {
 		return -randomOnSphere;
 }
 
+inline Vector3 randomInUnitDisk() {
+	while (true) {
+		Vector3 v = Vector3(randomDouble(-1, 1), randomDouble(-1, 1), 0);
+		if (v.lengthSquared() < 1)
+			return v;
+	}
+}
+
 // Reflects vector 'v' about the surface with unit normal vector 'n'.
 inline Vector3 reflect(const Vector3& v, const Vector3& n) {
 	return v - 2 * dot(v, n) * n;

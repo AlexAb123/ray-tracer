@@ -10,13 +10,12 @@ void Camera::initialize()
 
     m_pixelSamplesScale = 1.0 / m_samplesPerPixel;
 
-    Vector3 center = m_lookFrom;
+    m_center = m_lookFrom;
 
     // Camera
-    double focalLength = (m_lookFrom - m_lookAt).length(); // Distance from camera to projection plane
     double theta = degreesToRadians(m_vFov); // Vertical field of view in degrees
     double h = std::tan(theta / 2); // Half of the viewport height per unit focal length
-    double viewportHeight = 2 * h * focalLength;
+    double viewportHeight = 2 * h * m_focusDist;
     double viewportWidth = viewportHeight * (double)m_imageWidth / m_imageHeight;
 
     // Calculate the u,v,w orthonormal basis vectors for the camera coordinate frame.
@@ -32,8 +31,13 @@ void Camera::initialize()
     m_pixelDeltaU = viewportU / m_imageWidth;
     m_pixelDeltaV = viewportV / m_imageHeight;
 
-    Vector3 viewportTopLeft = center - (focalLength * m_w) - (viewportU / 2.0) - (viewportV / 2.0);
+    Vector3 viewportTopLeft = m_center - (m_focusDist * m_w) - (viewportU / 2.0) - (viewportV / 2.0);
     m_pixel00Center = viewportTopLeft + 0.5 * (m_pixelDeltaU + m_pixelDeltaV);
+
+    // Calculate the camera defocus disk basis vectors.
+    double defocusRadius = m_focusDist * std::tan(degreesToRadians(m_defocusAngle / 2));
+    m_defocusDiskU = m_u * defocusRadius;
+    m_defocusDiskV = m_v * defocusRadius;
 }
 
 void Camera::render(const Hittable& world)
@@ -113,8 +117,8 @@ Vector3 Camera::rayColor(const Ray& r, const Hittable& world, const int bounces)
     return (1.0 - a) * Vector3(1.0, 1.0, 1.0) + a * Vector3(0.5, 0.7, 1.0);
 }
 
-// Construct a camera ray originating from the origin and directed at randomly sampled
-// point around the pixel location x, y.
+// Construct a camera ray originating from the defocus disk and directed at a randomly
+// sampled point around the pixel location x, y.
 Ray Camera::getRay(int x, int y) const
 {
     Vector3 offset = Camera::sampleSquare();
@@ -122,7 +126,7 @@ Ray Camera::getRay(int x, int y) const
         + ((x + offset.x()) * m_pixelDeltaU)
         + ((y + offset.y()) * m_pixelDeltaV);
 
-    Vector3 rayOrigin = m_lookFrom;
+    Vector3 rayOrigin = (m_defocusAngle <= 0) ? m_center : defocusDiskSample();
     Vector3 rayDir = pixelSample - rayOrigin;
 
     return Ray(rayOrigin, rayDir);
@@ -131,4 +135,10 @@ Ray Camera::getRay(int x, int y) const
 // Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5] unit square.
 Vector3 Camera::sampleSquare() {
     return Vector3(randomDouble() - 0.5, randomDouble() - 0.5, 0);
+}
+
+// Returns a random point in the camera defocus disk.
+Vector3 Camera::defocusDiskSample() const {
+    Vector3 v = randomInUnitDisk();
+    return m_center + (v.x() * m_defocusDiskU) + (v.y() * m_defocusDiskV);
 }
