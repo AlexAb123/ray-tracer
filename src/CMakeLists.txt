@@ -4,7 +4,7 @@
 
 
 # Add source to this project's executable.
-add_executable (Renderer "renderer.cpp" "renderer.h" "hittable.h" "hittable_list.h" "ray.h" "vector3.h" "sphere.h" "utils.h" "interval.h" "camera.h" "camera.cpp" "interval.cpp" "material.h")
+add_executable (Renderer "CPU/renderer.cpp" "CPU/renderer.h" "CPU/hittable.h" "CPU/hittable_list.h" "CPU/ray.h" "CPU/vector3.h" "CPU/sphere.h" "CPU/utils.h" "CPU/interval.h" "CPU/camera.h" "CPU/camera.cpp" "CPU/interval.cpp" "CPU/material.h" "main.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Renderer PROPERTY CXX_STANDARD 20)
@@ -24,3 +24,7 @@ target_link_libraries(Renderer PRIVATE
     user32  
     gdi32
 )
+
+find_package(Vulkan REQUIRED)
+target_include_directories(Renderer PRIVATE ${Vulkan_INCLUDE_DIRS})
+target_link_libraries(Renderer PRIVATE ${Vulkan_LIBRARIES})

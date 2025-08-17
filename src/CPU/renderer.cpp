@@ -6,8 +6,12 @@
 #include "camera.h"
 #include "material.h"
 
-int main() {
+#include <glm/glm.hpp>
 
+int main1() {
+
+
+    glm::vec3 v = glm::vec3(1, 0, 2);
     // World
     HittableList world1;
 
@@ -87,4 +91,6 @@ int main() {
     cam.setFocusDist(10.0);
 
     cam.render(world1);
+
+    return 0;
 }
