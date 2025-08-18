@@ -1,8 +1,6 @@
 ﻿# CMakeList.txt : CMake project for Renderer, include source and define
 # project specific logic here.
 
-
-
 # Add source to this project's executable.
 add_executable (Renderer "CPU/renderer.cpp" "CPU/renderer.h" "CPU/hittable.h" "CPU/hittable_list.h" "CPU/ray.h" "CPU/vector3.h" "CPU/sphere.h" "CPU/utils.h" "CPU/interval.h" "CPU/camera.h" "CPU/camera.cpp" "CPU/interval.cpp" "CPU/material.h" "main.cpp")
 
