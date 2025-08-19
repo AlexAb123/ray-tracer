@@ -8,7 +8,7 @@
 
 #include <glm/glm.hpp>
 
-int main1() {
+int main() {
 
 
     glm::vec3 v = glm::vec3(1, 0, 2);

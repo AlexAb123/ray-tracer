@@ -1,7 +1,6 @@
-﻿# CMakeList.txt : Top-level CMake project file, do global configuration
-# and include sub-projects here.
-#
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.8)
+
+project ("Renderer")
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -10,9 +9,28 @@ if (POLICY CMP0141)
 	set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
-project ("renderer")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${PROJECT_NAME}")
 
-# Include sub-projects.
-add_subdirectory ("src")
+add_executable (Renderer "src/main.cpp")
+
+if (CMAKE_VERSION VERSION_GREATER 3.12)
+  set_property(TARGET Renderer PROPERTY CXX_STANDARD 20)
+endif()
 
 
+# Add the include directory
+target_include_directories(Renderer PRIVATE 
+    "${CMAKE_SOURCE_DIR}/dependencies/include"
+)
+
+# Link libraries
+target_link_libraries(Renderer PRIVATE 
+    "${CMAKE_SOURCE_DIR}/dependencies/lib/glfw3.lib"
+    opengl32
+    user32  
+    gdi32
+)
+
+find_package(Vulkan REQUIRED)
+target_include_directories(Renderer PRIVATE ${Vulkan_INCLUDE_DIRS})
+target_link_libraries(Renderer PRIVATE ${Vulkan_LIBRARIES})
