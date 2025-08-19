@@ -17,7 +17,6 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Renderer PROPERTY CXX_STANDARD 20)
 endif()
 
-
 # Add the include directory
 target_include_directories(Renderer PRIVATE 
     "${CMAKE_SOURCE_DIR}/dependencies/include"
