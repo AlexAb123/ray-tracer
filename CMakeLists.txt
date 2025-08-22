@@ -13,4 +13,5 @@ endif()
 project("renderer")
 
 # Include sub-projects.
+add_subdirectory ("assets")
 add_subdirectory ("src")
