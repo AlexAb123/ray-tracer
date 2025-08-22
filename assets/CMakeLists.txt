@@ -2,7 +2,8 @@ set(SHADERS
     "shaders/shader.frag"
     "shaders/shader.vert"
 )
-find_package(Vulkan REQUIRED glslc) 
+
+find_package(Vulkan REQUIRED) 
 
 foreach(RELATIVE_PATH ${SHADERS})
     set(SHADER "${CMAKE_CURRENT_SOURCE_DIR}/${RELATIVE_PATH}")
@@ -12,7 +13,7 @@ foreach(RELATIVE_PATH ${SHADERS})
     set(COMPILED_SHADERS ${COMPILED_SHADERS} ${OUTPUT_PATH})
 	set(COMPILED_SHADERS ${COMPILED_SHADERS} PARENT_SCOPE)
     add_custom_command(
-        COMMENT "Compiling shader ${SHADER}..."
+        COMMENT "Compiling shader: ${RELATIVE_PATH}"
         OUTPUT ${OUTPUT_PATH}
         COMMAND ${CMAKE_COMMAND} -E make_directory ${OUTPUT_DIR}
         COMMAND Vulkan::glslc ${SHADER} -o ${OUTPUT_PATH}
@@ -20,10 +21,4 @@ foreach(RELATIVE_PATH ${SHADERS})
     )
 endforeach()
 
-add_custom_target(Assets DEPENDS ${COMPILED_SHADERS})
-
-# Publish outputs globally so src/ can see them
-set_property(GLOBAL PROPERTY ALL_COMPILED_SHADERS "${COMPILED_SHADERS}")
-
-# Helpful debug:
-message(STATUS "compiled_shaders (assets): ${COMPILED_SHADERS}")
+add_custom_target(Shaders DEPENDS ${COMPILED_SHADERS})
