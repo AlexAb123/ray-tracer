@@ -1,11 +1,11 @@
-set(SHADERS 
+set(SHADER_FILES 
     "shaders/shader.frag"
     "shaders/shader.vert"
 )
 
 find_package(Vulkan REQUIRED) 
 
-foreach(RELATIVE_PATH ${SHADERS})
+foreach(RELATIVE_PATH ${SHADER_FILES})
     set(SHADER "${CMAKE_CURRENT_SOURCE_DIR}/${RELATIVE_PATH}")
     get_filename_component(FILENAME ${SHADER} NAME)
     set(OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/shaders")
