@@ -14,3 +14,5 @@ project("renderer")
 # Include sub-projects.
 add_subdirectory ("assets")
 add_subdirectory ("src")
+
+message(STATUS "VCPKG_ROOT env: $ENV{VCPKG_ROOT}")
