@@ -16,14 +16,17 @@ endif()
 
 # Add the include directory
 target_include_directories(${EXE} PRIVATE 
-    "${CMAKE_SOURCE_DIR}/dependencies/include"
+    
 )
 
 find_package(Vulkan REQUIRED)
 
+# vcpkg ports
+find_package(glfw3 CONFIG REQUIRED)
+
 # Link libraries
 target_link_libraries(${EXE} PRIVATE 
-    "${CMAKE_SOURCE_DIR}/dependencies/lib/glfw3.lib"
+    glfw
     opengl32
     user32  
     gdi32
