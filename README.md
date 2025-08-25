@@ -1,6 +1,6 @@
 ## Building
 
-**Windows (Visual Studio 2022)**
+### Windows (Visual Studio 2022)
 
 1. Download the **[Vulkan SDK](https://vulkan.lunarg.com)**.
 
