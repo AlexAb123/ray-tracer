@@ -2,15 +2,17 @@
   "version": 3,
   "configurePresets": [
     {
-      "name": "vcpkg-base",
+      "name": "vcpkg-base-windows",
       "hidden": true,
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "cl.exe",
-        "CMAKE_CXX_COMPILER": "cl.exe",
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      },
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
       },
       "condition": {
         "type": "equals",
@@ -19,24 +21,32 @@
       }
     },
     {
-      "name": "x64-debug-base",
-      "hidden": true,
-      "inherits": "vcpkg-base",
-      "architecture": {
-        "value": "x64",
-        "strategy": "external"
-      },
+      "name": "debug",
+      "displayName": "Debug",
+      "inherits": "vcpkg-base-windows",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
-      "name": "x64-release-base",
-      "hidden": true,
-      "inherits": "vcpkg-base",
+      "name": "release",
+      "displayName": "Release",
+      "inherits": "vcpkg-base-windows",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "displayName": "Debug",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "release",
+      "displayName": "Release",
+      "configurePreset": "release"
     }
   ]
 }

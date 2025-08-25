@@ -26,9 +26,6 @@ find_package(glfw3 CONFIG REQUIRED)
 
 # Link libraries
 target_link_libraries(${EXE} PRIVATE 
-    glfw
-    opengl32
-    user32  
-    gdi32
     Vulkan::Vulkan
+    glfw
 )

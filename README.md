@@ -4,20 +4,13 @@
 
 1. Download the **[Vulkan SDK](https://vulkan.lunarg.com)**.
 2. Clone **[vcpkg](https://github.com/microsoft/vcpkg)** and run the **bootsrap-vcpkg** script.
-3. Create a file called `CMakeUserPresets.json` at the root of the project and paste in the following JSON block, adjusting `VCPKG_ROOT` depending on where vcpkg is located on your computer. 
-```json
-{
-  "version": 3,
-  "configurePresets": [
-    {
-      "name": "x64-release",
-      "displayName": "x64 Release",
-      "inherits": "x64-release-base",
-      "environment": {
-        "VCPKG_ROOT": "C:/path/to/vcpkg"
-      }
-    }
-  ]
-}
+3. Set the path to the vcpkg root directory as `VCPKG_ROOT` in your system's environment variables.
+
+Alternatively, if you use Visal Studio and included **vcpkg** with your Visual Studio installation, you can skip steps 2 and 3.
+
+4. Either build from inside Visual Studio or run the following commands in `x64 Native Tools Command Prompt for VS 2022`
+
 ```
-Alternatively, if you included **vcpkg** with your Visual Studio installation, you can skip step 2 and don't need to set `VCPKG_ROOT` manually, meaning you can remove the `environment` section from the above JSON snippet.
+cmake --preset release
+cmake --build --preset release
+```
