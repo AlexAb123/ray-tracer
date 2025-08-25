@@ -6,9 +6,9 @@ set(EXE "Renderer")
 
 add_executable(${EXE} "main.cpp")
 
-add_dependencies(${EXE} Shaders)
+add_dependencies(${EXE} Assets)
 
-set_target_properties(${EXE} PROPERTIES DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+set_target_properties(${EXE} PROPERTIES DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET ${EXE} PROPERTY CXX_STANDARD 20)

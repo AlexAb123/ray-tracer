@@ -396,8 +396,8 @@ private:
     }
 
     void createGraphicsPipeline() {
-        auto vertShaderCode = readFile("assets/shaders/shader.vert.spv");
-        auto fragShaderCode = readFile("assets/shaders/shader.frag.spv");
+        auto vertShaderCode = readFile("../assets/shaders/shader.vert.spv");
+        auto fragShaderCode = readFile("../assets/shaders/shader.frag.spv");
 
         VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
         VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
@@ -740,6 +740,5 @@ int main() {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
-
     return EXIT_SUCCESS;
 }
