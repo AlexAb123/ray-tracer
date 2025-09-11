@@ -14,3 +14,6 @@ If you included **vcpkg** with your Visual Studio installation, you can skip ste
 ```
 cmake --preset release && cmake --build --preset release
 ```
+
+#### References:
+- https://vulkan-tutorial.com
