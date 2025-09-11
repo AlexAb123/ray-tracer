@@ -16,4 +16,5 @@ cmake --preset release && cmake --build --preset release
 ```
 
 #### References:
+- https://raytracing.github.io
 - https://vulkan-tutorial.com
